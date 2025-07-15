@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.mms.meetingroom.app-mergeDebugResources-54:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "F:\\gradle-home\\caches\\transforms-4\\613a81453b7cbbeb10f007f6baeff78e\\transformed\\appcompat-1.6.1\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}

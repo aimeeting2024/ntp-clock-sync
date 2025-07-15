@@ -1,0 +1,38 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.mms.meetingroom.app-mergeReleaseResources-51:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\xinji\\.gradle\\caches\\transforms-4\\613a81453b7cbbeb10f007f6baeff78e\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "121",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "289"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\xinji\\.gradle\\caches\\transforms-4\\d4e9477fe7fda57c647751852c976639\\transformed\\core-1.12.0\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}

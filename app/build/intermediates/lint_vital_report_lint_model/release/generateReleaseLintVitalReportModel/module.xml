@@ -1,0 +1,26 @@
+<lint-module
+    format="1"
+    dir="F:\workspace\meeting-board-multitenant\android\app"
+    name=":app"
+    type="APP"
+    maven="MeetingRoom:app:"
+    agpVersion="8.2.2"
+    buildFolder="build"
+    bootClassPath="F:\androidwork\Android\Sdk\platforms\android-34\android.jar;F:\androidwork\Android\Sdk\build-tools\34.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-34"
+    neverShrinking="true">
+  <lintOptions
+      disable="Deprecated"
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true">
+    <severities>
+      <severity
+        id="Deprecated"
+        severity="IGNORE" />
+    </severities>
+  </lintOptions>
+  <variant name="release"/>
+</lint-module>

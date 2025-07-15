@@ -1,0 +1,4 @@
+[*.kt]
+ktlint_standard = disabled
+experimental_warnings = true
+unused_parameter_warning = true

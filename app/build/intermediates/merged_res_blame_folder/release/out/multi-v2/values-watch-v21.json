@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.mms.meetingroom.app-mergeReleaseResources-51:/values-watch-v21/values-watch-v21.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\xinji\\.gradle\\caches\\transforms-4\\613a81453b7cbbeb10f007f6baeff78e\\transformed\\appcompat-1.6.1\\res\\values-watch-v21\\values-watch-v21.xml",
+                    "from": {
+                        "startLines": "2,6,10",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,271,499",
+                        "endLines": "5,9,13",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "266,494,724"
+                    }
+                }
+            ]
+        }
+    ]
+}

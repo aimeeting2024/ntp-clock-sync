@@ -1,0 +1,2 @@
+com.mms.meetingroom.test:style/WhiteBackgroundTheme = 0x7f010001
+com.mms.meetingroom.test:style/WhiteBackgroundDialogTheme = 0x7f010000

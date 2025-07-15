@@ -1,0 +1,3 @@
+# 忽略本地配置
+gradle.properties
+local.properties
