@@ -1,0 +1,73 @@
+buildscript {
+    ext {
+        compose_version = '1.5.0'
+        compose_compiler_version = '1.5.1'
+        compose_bom_version = '2024.02.00'
+        kotlin_version = '1.9.0'
+        core_ktx_version = '1.12.0'
+        appcompat_version = '1.6.1'
+        material_version = '1.11.0'
+        activity_compose_version = '1.8.2'
+        lifecycle_version = '2.7.0'
+        coroutines_version = '1.7.3'
+        hilt_version = '2.50'
+        retrofit_version = '2.9.0'
+        okhttp_version = '4.12.0'
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0'
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.50'
+    }
+    repositories {
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        google()
+        mavenCentral()
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.buildDir
+}
+
+tasks.register('killGradleProcesses', Exec) {
+    group = 'build'
+    description = '强制结束所有Gradle进程'
+    
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'taskkill /F /IM java.exe /FI "WINDOWTITLE eq Gradle*" || exit /b 0'
+    } else {
+        commandLine 'sh', '-c', "ps aux | grep gradle | grep -v grep | awk '{print \$2}' | xargs kill -9 || true"
+    }
+}
+
+tasks.register('killAllJavaProcesses', Exec) {
+    group = 'build'
+    description = '强制结束所有Java进程'
+    
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'taskkill /F /IM java.exe || exit /b 0'
+    } else {
+        commandLine 'sh', '-c', "ps aux | grep java | grep -v grep | awk '{print \$2}' | xargs kill -9 || true"
+    }
+}
+
+tasks.register('cleanAllAndBuild') {
+    dependsOn 'killAllJavaProcesses'
+    dependsOn 'clean'
+    dependsOn ':app:build'
+    
+    tasks.findByName('clean').mustRunAfter 'killAllJavaProcesses'
+    tasks.findByName(':app:build').mustRunAfter 'clean'
+}
+
+tasks.getByPath(':app:clean').dependsOn(killGradleProcesses)
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
