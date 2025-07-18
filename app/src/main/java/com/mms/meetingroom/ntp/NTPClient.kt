@@ -110,7 +110,8 @@ data class NTPTimeResult(
     val delay: Long? = null,
     val offset: Long? = null,
     val server: String = "",
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    var systemTimeModified: Boolean? = null
 )
 
 /**

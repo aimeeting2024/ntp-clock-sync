@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 import com.mms.meetingroom.ntp.NTPManager
 import com.mms.meetingroom.ntp.NTPStatus
 import com.mms.meetingroom.ui.component.NTPStatusComponent
@@ -23,22 +24,55 @@ import java.util.*
 class MainActivity : ComponentActivity() {
     private lateinit var ntpManager: NTPManager
     
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // 初始化NTP管理器
-        ntpManager = NTPManager(this)
+        Log.d(TAG, "MainActivity onCreate 开始")
         
-        setContent {
-            MaterialTheme {
-                NTPConfigScreen(
-                    ntpManager = ntpManager,
-                    onStartService = { ntpServer, syncInterval ->
-                        startBackgroundService(ntpServer, syncInterval)
-                    }
-                )
+        try {
+            // 初始化NTP管理器
+            ntpManager = NTPManager(this)
+            
+            setContent {
+                MaterialTheme {
+                    NTPConfigScreen(
+                        ntpManager = ntpManager,
+                        onStartService = { ntpServer, syncInterval ->
+                            startBackgroundService(ntpServer, syncInterval)
+                        }
+                    )
+                }
+            }
+            
+            Log.d(TAG, "MainActivity onCreate 完成")
+        } catch (e: Exception) {
+            Log.e(TAG, "MainActivity onCreate 失败: ${e.message}", e)
+            // 显示错误界面
+            setContent {
+                MaterialTheme {
+                    ErrorScreen(error = e.message ?: "未知错误")
+                }
             }
         }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "MainActivity onDestroy")
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "MainActivity onPause")
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "MainActivity onResume")
     }
     
     private fun startBackgroundService(ntpServer: String, syncInterval: Long) {
@@ -263,6 +297,10 @@ fun NTPConfigScreen(
             
             Spacer(modifier = Modifier.height(12.dp))
             
+
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
             // 权限状态显示
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -280,12 +318,74 @@ fun NTPConfigScreen(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     
-                    // 异步显示权限状态
-                    var permissionStatus by remember { mutableStateOf("检查中...") }
+                    // 手动权限检查
+                    var permissionStatus by remember { mutableStateOf("未检查") }
+                    var isCheckingPermission by remember { mutableStateOf(false) }
                     
+                    // 手动检查权限按钮
+                    Button(
+                        onClick = {
+                            if (!isCheckingPermission) {
+                                isCheckingPermission = true
+                                scope.launch {
+                                    try {
+                                        val status = ntpManager.getSystemTimeManager().getPermissionStatusAsync()
+                                        permissionStatus = status
+                                    } catch (e: Exception) {
+                                        Log.e("MainActivity", "权限检查失败: ${e.message}", e)
+                                        permissionStatus = "❌ 权限检查失败"
+                                    } finally {
+                                        isCheckingPermission = false
+                                    }
+                                }
+                            }
+                        },
+                        enabled = !isCheckingPermission,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text(
+                            text = if (isCheckingPermission) "检查中..." else "检查Root权限",
+                            fontSize = 12.sp
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // 调试按钮
+                    var debugInfo by remember { mutableStateOf<String?>(null) }
+                    var showDebug by remember { mutableStateOf(false) }
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(
+                            onClick = {
+                                showDebug = !showDebug
+                                if (showDebug) {
+                                    scope.launch {
+                                        debugInfo = ntpManager.getSystemTimeManager().debugPermissionCheck()
+                                    }
+                                } else {
+                                    debugInfo = null
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = if (showDebug) "隐藏调试信息" else "显示调试信息",
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                    
+                    // 权限状态显示
                     LaunchedEffect(Unit) {
                         try {
-                            val status = ntpManager.getSystemTimeManager().getPermissionStatusAsync()
+                            val status = ntpManager.getSystemTimeManager().getPermissionStatusQuick()
                             permissionStatus = status
                         } catch (e: Exception) {
                             permissionStatus = "❌ 权限检查失败"
@@ -297,9 +397,8 @@ fun NTPConfigScreen(
                         fontSize = 13.sp,
                         color = when {
                             permissionStatus.contains("✅") -> MaterialTheme.colorScheme.primary
-                            permissionStatus.contains("⚠️") -> MaterialTheme.colorScheme.tertiary
-                            permissionStatus.contains("检查中") -> MaterialTheme.colorScheme.onSurfaceVariant
-                            else -> MaterialTheme.colorScheme.error
+                            permissionStatus.contains("❌") -> MaterialTheme.colorScheme.error
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
                         }
                     )
                     
@@ -310,6 +409,23 @@ fun NTPConfigScreen(
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 4.dp)
                         )
+                    }
+                    
+                    // 显示调试信息
+                    debugInfo?.let { info ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = info,
+                                modifier = Modifier.padding(8.dp),
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
@@ -330,13 +446,23 @@ fun NTPConfigScreen(
                                     // 立即更新NTP状态
                                     ntpStatus = ntpManager.getNTPStatus()
                                     
-                                    val systemTimeInfo = "\n系统时间修改: ${if (result.ntpTime != null) "已尝试修改" else "未修改"}"
+                                    // 根据实际修改结果显示状态
+                                    val systemTimeInfo = when {
+                                        result.systemTimeModified == true -> "✅ 修改成功"
+                                        result.systemTimeModified == false -> "❌ 修改失败"
+                                        else -> "⚠️ 未尝试修改"
+                                    }
+                                    
+                                    // 获取当前时区
+                                    val currentTz = ntpManager.getSystemTimeManager().getCurrentTimezone()
                                     
                                     manualSyncResult = "✅ 手动同步成功！\n" +
                                             "NTP时间: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(result.ntpTime)}\n" +
                                             "本地时间: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(result.localTime)}\n" +
                                             "时间偏移: ${if (result.offset!! >= 0) "+" else ""}${result.offset}ms\n" +
-                                            "网络延迟: ${result.delay}ms$systemTimeInfo"
+                                            "网络延迟: ${result.delay}ms\n" +
+                                            "系统时间修改: $systemTimeInfo\n" +
+                                            "当前时区: $currentTz"
                                 } else {
                                     manualSyncResult = "❌ 手动同步失败！\n错误信息: ${result.errorMessage}"
                                 }
@@ -431,12 +557,14 @@ fun NTPConfigScreen(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // 当前时间显示
+            // 当前时间和时区显示
             var currentTime by remember { mutableStateOf(Date()) }
+            var currentTimezone by remember { mutableStateOf("") }
             
             LaunchedEffect(Unit) {
                 while (true) {
                     currentTime = Date() // 直接使用系统当前时间
+                    currentTimezone = ntpManager.getSystemTimeManager().getCurrentTimezone()
                     kotlinx.coroutines.delay(1000) // 每秒更新
                 }
             }
@@ -466,6 +594,14 @@ fun NTPConfigScreen(
                         fontWeight = FontWeight.Bold
                     )
                     
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Text(
+                        text = "时区: $currentTimezone",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    
                     if (ntpStatus.lastOffset != null) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -475,6 +611,50 @@ fun NTPConfigScreen(
                         )
                     }
                 }
+            }
+        }
+    }
+} 
+
+@Composable
+fun ErrorScreen(error: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "❌ 应用启动失败",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "错误信息: $error",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Text(
+                    text = "请重启应用或检查设备状态",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                )
             }
         }
     }

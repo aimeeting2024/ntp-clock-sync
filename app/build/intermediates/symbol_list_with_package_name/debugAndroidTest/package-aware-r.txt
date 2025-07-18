@@ -1,3 +1,0 @@
-com.mms.meetingroom.test
-style WhiteBackgroundDialogTheme
-style WhiteBackgroundTheme

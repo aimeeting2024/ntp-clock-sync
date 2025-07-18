@@ -26,8 +26,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MeetingRoom"
-            android:screenOrientation="landscape"
-            android:launchMode="singleTask">
+            android:screenOrientation="landscape">
             
             <!-- 默认启动器 -->
             <intent-filter>

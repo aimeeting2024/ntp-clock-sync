@@ -1,6 +1,0 @@
-com.mms.meetingroom.test.app-annotation-experimental-1.4.0-0 C:\Users\xinji\.gradle\caches\transforms-4\7b6d8cafb32d8a73ec92910cb8c2ef88\transformed\annotation-experimental-1.4.0\res
-com.mms.meetingroom.test.app-core-1.5.0-1 C:\Users\xinji\.gradle\caches\transforms-4\f4466b65a3062365417bcf811e726ca2\transformed\core-1.5.0\res
-com.mms.meetingroom.test.app-androidTest-2 F:\workspace\meeting-board-multitenant\android\app\build\generated\res\resValues\androidTest\debug
-com.mms.meetingroom.test.app-mergeDebugAndroidTestResources-3 F:\workspace\meeting-board-multitenant\android\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
-com.mms.meetingroom.test.app-mergeDebugAndroidTestResources-4 F:\workspace\meeting-board-multitenant\android\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
-com.mms.meetingroom.test.app-merged_res-5 F:\workspace\meeting-board-multitenant\android\app\build\intermediates\merged_res\debugAndroidTest

@@ -1,7 +1,0 @@
-#Tue Jul 15 10:02:35 CST 2025
-base.0=F\:\\workspace\\meeting-board-multitenant\\android\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeExtDexDebugAndroidTest\\classes.dex
-base.1=F\:\\workspace\\meeting-board-multitenant\\android\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
-path.0=classes.dex
-path.1=0/classes.dex
-renamed.0=classes.dex
-renamed.1=classes2.dex

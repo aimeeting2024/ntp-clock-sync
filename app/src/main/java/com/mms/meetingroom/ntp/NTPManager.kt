@@ -55,11 +55,14 @@ class NTPManager(private val context: Context) {
                         
                         // 自动修改系统时间
                         if (result.ntpTime != null) {
+                            // 修改系统时间
                             val systemTimeUpdated = systemTimeManager.setSystemTime(result.ntpTime!!)
                             if (systemTimeUpdated) {
                                 Log.d(TAG, "系统时间修改成功")
+                                result.systemTimeModified = true
                             } else {
                                 Log.w(TAG, "系统时间修改失败，需要root权限")
+                                result.systemTimeModified = false
                             }
                         }
                     } else {
@@ -114,11 +117,15 @@ class NTPManager(private val context: Context) {
                 if (updateSystemTime && result.ntpTime != null) {
                     // 在后台线程中执行系统时间修改
                     withContext(Dispatchers.IO) {
+                        // 修改系统时间
                         val systemTimeUpdated = systemTimeManager.setSystemTime(result.ntpTime!!)
                         if (systemTimeUpdated) {
                             Log.d(TAG, "系统时间修改成功")
+                            // 更新结果中的系统时间修改状态
+                            result.systemTimeModified = true
                         } else {
-                            Log.w(TAG, "系统时间修改失败，需要root权限")
+                            Log.d(TAG, "系统时间修改失败，需要root权限")
+                            result.systemTimeModified = false
                         }
                     }
                 }
